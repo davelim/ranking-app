@@ -1,4 +1,5 @@
 import React, {useState, useEffect} from 'react';
+import MovieImageArr from "./MovieImages.js"
 
 
 const RankItems = () => {
@@ -16,12 +17,21 @@ const RankItems = () => {
     },[]); // fetch data and populate "items" array
 
     const itemsJSX =
-        items != null
-        ? items.map(item => <h3>{item.title}</h3>)
+        (items.length > 0)
+        ? items.map(item => {
+            return (
+              <div className="unranked-cell">
+                {/* <h3>{item.title}, {item.id}, {item.imageId}</h3> */}
+                <img id={`item-${item.id}`} src={MovieImageArr.find(img => img.id === item.imageId)?.image} />
+              </div>)})
         : <div>Loading...</div>;
 
     return(
-        <main>{itemsJSX}</main>
+        <main>
+            <div className = "items-not-ranked">
+                {itemsJSX}
+            </div>
+        </main>
     );
 }
 export default RankItems;
