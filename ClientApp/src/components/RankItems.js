@@ -1,8 +1,13 @@
-import {useEffect} from 'react';
+import {useEffect, useState} from 'react';
 import RankingGrid from "./RankingGrid.js";
 import ItemCollection from "./ItemCollection.js";
 
 const RankItems = ({items, setItems, dataType, imgArr, localStorageKey}) => {
+    const [reload, setReload] = useState(false);
+    function Reload() {
+        setReload(true);
+    }
+
     function drag(ev) {
         ev.dataTransfer.setData("text", ev.target.id);
     }
@@ -29,6 +34,12 @@ const RankItems = ({items, setItems, dataType, imgArr, localStorageKey}) => {
     }
 
     useEffect(() => {
+        if (items == null) {
+            getDataFromApi();
+        }
+    },[dataType]); // fetch data and populate "(album/movie)Items" array
+
+    function getDataFromApi() {
         fetch(`item/${dataType}`)
         .then((results) => {
             return results.json();
@@ -36,13 +47,20 @@ const RankItems = ({items, setItems, dataType, imgArr, localStorageKey}) => {
         .then(data => {
             setItems(data);
         })
-    },[dataType]); // fetch data and populate "(album/movie)Items" array
+    }
 
     useEffect(() =>{
         if (items != null) {
             localStorage.setItem(localStorageKey, JSON.stringify(items));
         }
+        setReload(false);
     }, [items]);
+
+    useEffect(() => {
+        if (reload == true) {
+            getDataFromApi();
+        }
+    }, [reload]);
 
     return(
         (items != null)
@@ -51,6 +69,7 @@ const RankItems = ({items, setItems, dataType, imgArr, localStorageKey}) => {
             <RankingGrid items={items} imgArr={imgArr}
                 drag={drag} allowDrop={allowDrop} drop={drop}/>
             <ItemCollection items={items} drag={drag} imgArr={imgArr} />
+            <button onClick={Reload} className="reload" style={{"marginTop":"10px"}}>Reload</button>
         </main>
         : <main>Loading...</main>
     );
