@@ -1,13 +1,8 @@
-import React, {useState, useEffect} from 'react';
-import MovieImageArr from "./MovieImages.js";
+import {useEffect} from 'react';
 import RankingGrid from "./RankingGrid.js";
 import ItemCollection from "./ItemCollection.js";
-import Item from './Item.js';
 
-const RankItems = () => {
-    const [items, setItems] = useState([]);
-    const dataType = 1; // 1: movies, 2: albums
-
+const RankItems = ({items, setItems, dataType, imgArr, localStorageKey}) => {
     function drag(ev) {
         ev.dataTransfer.setData("text", ev.target.id);
     }
@@ -41,29 +36,23 @@ const RankItems = () => {
         .then(data => {
             setItems(data);
         })
-    },[]); // fetch data and populate "items" array
+    },[dataType]); // fetch data and populate "(album/movie)Items" array
 
-    // const itemsJSX =
-    //     (items.length > 0)
-    //     ? items.map(item => {
-    //         return (
-    //             (item.ranking === 0)
-    //                 ? <div className="unranked-cell">
-    //                 {/* <h3>{item.title}, {item.id}, {item.imageId}</h3> */}
-    //                 <img id={`item-${item.id}`} src={itemImgObj} style={{cursor:"pointer"}}
-    //                     draggable="true" onDragStart={drag}
-    //                 />
-    //             </div>
-    //                 : null
-    //             )})
-    //     : <div>Loading...</div>;
+    useEffect(() =>{
+        if (items != null) {
+            localStorage.setItem(localStorageKey, JSON.stringify(items));
+        }
+    }, [items]);
 
     return(
-        <main>
-            <RankingGrid items={items} imgArr={MovieImageArr}
+        (items != null)
+        ? <main>
+            {/* <h1>{localStorage[localStorageKey]}</h1> */}
+            <RankingGrid items={items} imgArr={imgArr}
                 drag={drag} allowDrop={allowDrop} drop={drop}/>
-            <ItemCollection items={items} drag={drag} imgArr={MovieImageArr} />
+            <ItemCollection items={items} drag={drag} imgArr={imgArr} />
         </main>
+        : <main>Loading...</main>
     );
 }
 export default RankItems;
