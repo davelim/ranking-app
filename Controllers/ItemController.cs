@@ -12,7 +12,7 @@ public class ItemController: ControllerBase
     public ItemModel[] Get(int itemType)
     {
         // to simulate fetching data/network delay
-        System.Threading.Thread.Sleep(2000);
+        // System.Threading.Thread.Sleep(2000);
         return ItemData.Get(itemType);
     }
 }
